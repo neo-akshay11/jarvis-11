@@ -95,14 +95,13 @@ export async function getLatestInterviews(
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
 
-  const interviews = await db.collection("interviews")
-  .where("finalized", "==", true)
-  .orderBy("createdAt", "desc")
-  .limit(limit)
-  .get();
-
-// Then filter out user's interviews client-side
-const filtered = interviews.docs.filter(doc => doc.data().userId !== userId);
+  const interviews = await db
+    .collection("interviews")
+    .orderBy("createdAt", "desc")
+    .where("finalized", "==", true)
+    .where("userId", "!=", userId)
+    .limit(limit)
+    .get();
 
   return interviews.docs.map((doc) => ({
     id: doc.id,
