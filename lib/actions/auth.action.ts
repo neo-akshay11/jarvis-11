@@ -1,10 +1,12 @@
 "use server";
 
+import { DocumentData } from "firebase/firestore";
 import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
 
 // Session duration (1 week)
 const SESSION_DURATION = 60 * 60 * 24 * 7;
+
 
 // Set session cookie
 export async function setSessionCookie(idToken: string) {
@@ -129,4 +131,48 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function isAuthenticated() {
   const user = await getCurrentUser();
   return !!user;
+}
+export async function getInterviewByUserId(userId: string): Promise<Interview[] | null> {
+  try {
+    const interviewsSnapshot = await db
+      .collection('interviews')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const interviews = interviewsSnapshot.docs.map((doc) => ({
+      ...(doc.data() as Interview),
+      id: doc.id, // <-- placed last to override any 'id' in doc.data()
+    }));
+
+    return interviews;
+  } catch (error) {
+    console.error("Error fetching interviews:", error);
+    return null;
+  }
+}
+
+export async function getLatestInterviews(params: GetLatestInterviewsParams): Promise<Interview[]> {
+  const { userId, limit } = params;
+
+  try {
+    const query = db
+      .collection("interviews")
+      .where("finalized", "==", true)
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc");
+
+    // Ensure limit is a number; provide a fallback if undefined
+    const limitedQuery = typeof limit === "number" ? query.limit(limit) : query;
+
+    const interviewsSnapshot = await limitedQuery.get();
+
+    return interviewsSnapshot.docs.map((doc) => ({
+      ...(doc.data() as Interview),
+      id: doc.id, // <-- placed last to override any 'id' in doc.data()
+    }));
+  } catch (error) {
+    console.error("Error fetching latest interviews:", error);
+    return [];
+  }
 }
