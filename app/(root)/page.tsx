@@ -13,11 +13,16 @@ import {
 async function Home() {
   const user = await getCurrentUser();
 
+  console.log('User ID:', user?.id); // Verify user ID exists
+
   const [userInterviews, allInterview] = await Promise.all([
     getInterviewsByUserId(user?.id!),
     getLatestInterviews({ userId: user?.id! }),
   ]);
 
+
+  console.log('User Interviews:', userInterviews); // Check what's returned
+  console.log('All Interviews:', allInterview);
   const hasPastInterviews = userInterviews?.length! > 0;
   const hasUpcomingInterviews = allInterview?.length! > 0;
 

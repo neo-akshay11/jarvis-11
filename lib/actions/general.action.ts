@@ -118,6 +118,8 @@ export async function getInterviewsByUserId(
     .orderBy("createdAt", "desc")
     .get();
 
+    console.log(`Found ${interviews.size} interviews for user ${userId}`); // Add this line
+
   return interviews.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
