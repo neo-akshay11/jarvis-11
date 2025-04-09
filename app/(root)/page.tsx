@@ -30,9 +30,9 @@ async function Home() {
     <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
-          <h2>Get Interview-Ready with AI-Powered Practice & Feedback</h2>
+          <h2>Suit Up - AI-Powered Mock Interviews That Sharpen Your Skills & Boost Confidence</h2>
           <p className="text-lg">
-            Practice real interview questions & get instant feedback
+          AI Feedback So Fast, Even Tony Would Approve
           </p>
 
           <Button asChild className="btn-primary max-sm:w-full">
